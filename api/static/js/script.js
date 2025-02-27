@@ -222,23 +222,67 @@ document.getElementById('radiusRange').addEventListener('input', (e) => {
 // Add geolocation support
 function getCurrentLocation() {
     if (navigator.geolocation) {
+        // Show loading state for location button
+        const locationButton = document.querySelector('[onclick="getCurrentLocation()"]');
+        const originalIcon = locationButton.innerHTML;
+        locationButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+        
         navigator.geolocation.getCurrentPosition(
-            (position) => {
-                const latitude = position.coords.latitude;
-                const longitude = position.coords.longitude;
-                
-                // Reverse geocode to get address
-                fetch(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=YOUR_GOOGLE_MAPS_API_KEY`)
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.results[0]) {
-                            document.getElementById('location').value = data.results[0].formatted_address;
-                        }
-                    });
+            async (position) => {
+                try {
+                    const latitude = position.coords.latitude;
+                    const longitude = position.coords.longitude;
+                    
+                    // Use Nominatim for reverse geocoding (free, no API key needed)
+                    const response = await fetch(
+                        `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`
+                    );
+                    
+                    if (!response.ok) throw new Error('Failed to get address');
+                    
+                    const data = await response.json();
+                    if (data) {
+                        // Format the address
+                        const address = [
+                            data.address.road,
+                            data.address.suburb,
+                            data.address.city,
+                            data.address.state
+                        ].filter(Boolean).join(', ');
+                        
+                        document.getElementById('location').value = address;
+                    }
+                } catch (error) {
+                    console.error("Error getting location:", error);
+                    alert("Unable to get your location. Please enter it manually.");
+                } finally {
+                    // Restore original button state
+                    locationButton.innerHTML = originalIcon;
+                }
             },
             (error) => {
-                console.error("Error getting location:", error);
-                alert("Unable to get your location. Please enter it manually.");
+                console.error("Geolocation error:", error);
+                let errorMessage = "Unable to get your location. ";
+                switch(error.code) {
+                    case error.PERMISSION_DENIED:
+                        errorMessage += "Please enable location access in your browser settings.";
+                        break;
+                    case error.POSITION_UNAVAILABLE:
+                        errorMessage += "Location information is unavailable.";
+                        break;
+                    case error.TIMEOUT:
+                        errorMessage += "Location request timed out.";
+                        break;
+                    default:
+                        errorMessage += "Please enter your location manually.";
+                }
+                alert(errorMessage);
+                locationButton.innerHTML = originalIcon;
+            },
+            {
+                enableHighAccuracy: true,
+                timeout: 10000,
+                maximumAge: 0
             }
         );
     } else {
