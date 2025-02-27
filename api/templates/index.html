@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Foodie Finder Pro | Find Your Perfect Restaurant</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+</head>
+<body class="bg-gray-900 min-h-screen text-gray-100">
+    <div class="container mx-auto px-4 py-8">
+        <header class="text-center mb-12">
+            <div class="flex items-center justify-center mb-4">
+                <i class="fas fa-utensils text-4xl text-indigo-500 mr-3"></i>
+                <h1 class="text-4xl font-bold text-indigo-400">Foodie Finder Pro</h1>
+            </div>
+            <p class="text-gray-400">Discover your next favorite dining spot</p>
+        </header>
+
+        <div class="bg-gray-800 rounded-lg shadow-xl p-6 mb-8">
+            <form id="searchForm" class="space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-gray-300 text-sm font-bold mb-2" for="location">
+                            Location
+                        </label>
+                        <div class="relative">
+                            <input type="text" id="location" name="location" 
+                                   class="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 text-gray-100"
+                                   placeholder="Enter area or landmark">
+                            <button type="button" class="absolute right-2 top-2 text-gray-400 hover:text-indigo-400"
+                                    onclick="getCurrentLocation()">
+                                <i class="fas fa-location-crosshairs"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-gray-300 text-sm font-bold mb-2">
+                            Search Radius
+                        </label>
+                        <div class="flex items-center space-x-4">
+                            <input type="range" id="radiusRange" min="1" max="20" value="5"
+                                   class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer">
+                            <span id="radiusValue" class="text-gray-300 w-20 text-center">5 km</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-gray-300 text-sm font-bold mb-2">
+                            Establishment Type
+                        </label>
+                        <select id="establishmentType" 
+                                class="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 text-gray-100">
+                            <option value="">All Types</option>
+                            <option value="Restaurant">Restaurant</option>
+                            <option value="Cafe">Cafe</option>
+                            <option value="Fast Food">Fast Food</option>
+                            <option value="Fine Dining">Fine Dining</option>
+                            <option value="Food Court">Food Court</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-gray-300 text-sm font-bold mb-2">
+                            Food Type
+                        </label>
+                        <select id="foodType" class="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 text-gray-100">
+                            <option value="">All Cuisines</option>
+                            <option value="Indian">Indian</option>
+                            <option value="Chinese">Chinese</option>
+                            <option value="Italian">Italian</option>
+                            <option value="Mexican">Mexican</option>
+                            <option value="Continental">Continental</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-gray-300 text-sm font-bold mb-2">
+                            Dietary Preferences
+                        </label>
+                        <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                            <label class="inline-flex items-center">
+                                <input type="checkbox" class="form-checkbox text-indigo-600" value="Pure Veg">
+                                <span class="ml-2">Pure Veg</span>
+                            </label>
+                            <label class="inline-flex items-center">
+                                <input type="checkbox" class="form-checkbox text-indigo-600" value="Jain">
+                                <span class="ml-2">Jain</span>
+                            </label>
+                            <label class="inline-flex items-center">
+                                <input type="checkbox" class="form-checkbox text-indigo-600" value="Healthy">
+                                <span class="ml-2">Healthy</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="text-center">
+                    <button type="submit" 
+                            class="bg-indigo-600 text-white px-8 py-3 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-800 transform hover:scale-105 transition-all duration-200">
+                        <i class="fas fa-search mr-2"></i>Find Restaurants
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <div id="loading" class="hidden">
+            <div class="flex justify-center items-center space-x-3">
+                <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-indigo-500"></div>
+                <span class="text-gray-400">Finding the perfect restaurants for you...</span>
+            </div>
+        </div>
+
+        <div id="results" class="hidden">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold text-gray-100">Search Results</h2>
+                <div class="flex space-x-4">
+                    <button onclick="toggleView('grid')" class="text-gray-400 hover:text-indigo-400">
+                        <i class="fas fa-th-large"></i>
+                    </button>
+                    <button onclick="toggleView('list')" class="text-gray-400 hover:text-indigo-400">
+                        <i class="fas fa-list"></i>
+                    </button>
+                </div>
+            </div>
+            <div id="resultsContent" class="space-y-4">
+                <!-- Results will be populated here -->
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html> 

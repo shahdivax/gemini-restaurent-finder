@@ -1,0 +1,146 @@
+/* Custom scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #cbd5e0;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #a0aec0;
+}
+
+/* Smooth transitions */
+.form-checkbox,
+button,
+select,
+input {
+    transition: all 0.2s ease-in-out;
+}
+
+/* Custom input focus styles */
+input:focus,
+select:focus {
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+}
+
+/* Results animation */
+#results {
+    transition: opacity 0.3s ease-in-out;
+}
+
+#results.hidden {
+    opacity: 0;
+}
+
+/* Loading spinner animation */
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Card hover effects */
+.bg-white {
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.bg-white:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+/* Custom checkbox styles */
+.form-checkbox {
+    border-radius: 4px;
+    border-color: #cbd5e0;
+}
+
+.form-checkbox:checked {
+    background-color: #6366f1;
+    border-color: #6366f1;
+}
+
+/* Responsive container padding */
+@media (max-width: 640px) {
+    .container {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+}
+
+/* Results content styling */
+#resultsContent p {
+    padding: 0.75rem;
+    border-bottom: 1px solid #e2e8f0;
+    line-height: 1.6;
+}
+
+#resultsContent p:last-child {
+    border-bottom: none;
+}
+
+#resultsContent p:hover {
+    background-color: #f8fafc;
+}
+
+/* Restaurant cards */
+.transform {
+    transition: transform 0.2s ease-in-out;
+}
+
+.hover\:scale-102:hover {
+    transform: scale(1.02);
+}
+
+/* Rating stars */
+.fa-star {
+    font-size: 0.875rem;
+}
+
+/* Price range colors */
+.text-green-600 {
+    color: #059669;
+}
+
+.text-yellow-600 {
+    color: #d97706;
+}
+
+.text-red-600 {
+    color: #dc2626;
+}
+
+/* Feature tags */
+.bg-indigo-100 {
+    background-color: #e0e7ff;
+}
+
+.text-indigo-800 {
+    color: #3730a3;
+}
+
+/* Grid layout */
+.grid {
+    display: grid;
+    gap: 1.5rem;
+}
+
+@media (min-width: 768px) {
+    .md\:grid-cols-2 {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (min-width: 1024px) {
+    .lg\:grid-cols-3 {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+} 
